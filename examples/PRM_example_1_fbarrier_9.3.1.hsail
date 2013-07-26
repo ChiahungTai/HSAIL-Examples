@@ -1,0 +1,51 @@
+version 1:0: $base : $small;
+kernel &__OpenCL_vec_add_kernel()
+{
+  // --- END: added to example to be accepted by parser
+          
+  // Example 1: Using leavefbar to create an fbarrier that only contains
+  // divergent work-items.
+  fbarrier %fb1;
+  workitemflatid_u32 $s0;
+  cmp_eq_u32_u32 $c0, $s0, 0; //if (workitemflatid == 0)
+  cbr $c0, @BB0_1;
+  brn @BB0_2;  // go to BB0_2 if you're not work item 0
+  @BB0_1: // %if.then
+    initfbar %fb1;  //workitem 0 initializes the fbarrier
+  @BB0_2: 
+  barrier_fnone;
+  joinfbar %fb1; // start with all work-items
+  barrier_fnone;
+  waveid_u32 $s1 ;
+  rem_u32 $s2, $s1, 4;
+  cmp_eq_u32_u32 $c1, $s2, 0; // cond1 checks if WAVEID % 4 == 0; cond1 must be WAVESIZE uniform
+  cbr $c1, @BB0_3;
+  brn @BB0_6;
+  @BB0_3: //if.cond1	
+  // ...
+  cmp_eq_u32_u32 $c1, $s1, 0; // cond2 checks if WAVEID == 0; cond2 must be WAVESIZE uniform
+  cbr $c1, @BB0_4;   
+  brn @BB0_5;  
+  @BB0_4: // if.cond2
+  //  ...
+  waitfbar_fglobal %fb1; // fb1 only has work-items for which
+                         // cond1 && cond2 is true as other work-items do not reach this
+  // ...
+  leavefbar %fb1;
+  brn @BB0_7;
+  @BB0_5: //  else.cond2
+  leavefbar %fb1;
+  brn @BB0_7; 	    
+  @BB0_6: //else.cond1
+  leavefbar %fb1;
+  @BB0_7:
+  barrier_fnone;
+  cbr $c0, @BB0_8;  //if (workitemflatid_u32 == 0) 
+  ret;
+  @BB0_8: //if (workitemflatid_u32 == 0).then
+  releasefbar %fb1; //workitem 0 releases the fbarrier
+  ret;
+
+// --- BEGIN: added to example to be accepted by parser
+};
+// --- END: added to example to be accepted by parser

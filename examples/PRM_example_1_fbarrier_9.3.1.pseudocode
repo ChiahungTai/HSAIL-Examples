@@ -1,0 +1,38 @@
+version 1:0: $base : $small;
+kernel &__OpenCL_vec_add_kernel()
+{
+  // --- END: added to example to be accepted by parser
+          
+  // Example 1: Using leavefbar to create an fbarrier that only contains
+  // divergent work-items.
+  fbarrier %fb1;
+  if (workitemflatid_u32 == 0) {
+    initfbar %fb1;
+  }
+  barrier_fnone;
+  joinfbar %fb1; // start with all work-items
+  barrier_fnone;
+  if (cond1) { // cond1 must be WAVESIZE uniform
+    // ...
+    if (cond2) { // cond2 must be WAVESIZE uniform
+    // ...
+      waitfbar_fglobal %fb1; // fb1 only has work-items for which
+    // cond1 && cond2 is true as other
+    // work-items have left on
+    // lines 16 and 19.
+    // ...
+      leavefbar %fb1;
+    } else {
+      leavefbar %fb1;
+    }
+  } else {
+    leavefbar %fb1;
+  }
+  barrier_fnone;
+  if (workitemflatid_u32 == 0) {
+    releasefbar %fb1;
+  }
+
+// --- BEGIN: added to example to be accepted by parser
+};
+// --- END: added to example to be accepted by parser

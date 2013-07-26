@@ -1,0 +1,46 @@
+version 1:0: $base : $small;
+kernel &__OpenCL_vec_add_kernel()
+{
+  // --- END: added to example to be accepted by parser
+
+  // Example: Using joinfbar to create an fbarrier that only contains
+  // divergent work-items.
+  fbarrier %fb0;
+  fbarrier %fb1;
+  if (workitemflatid_u32 == 0) {
+    initfbar %fb0;
+    initfbar %fb1;
+  }
+  barrier_fnone;
+  joinfbar %fb0; // fb0 has all work-items of work-group
+  barrier_fnone;
+  if (cond1) { // cond1 must be WAVESIZE uniform
+    // ...
+    if (cond2) { // cond2 must be WAVESIZE uniform
+      joinfbar %fb1;
+      waitfbar_fnone %fb0; // wait for all work-items to either
+      // join fb1 on line 14 or arrive at
+      // line 21 or 24
+      // ...
+      waitfbar_fglobal %fb1; // fb1 only has work-items for which
+      // cond1 && cond2 is true
+      // ...
+      leavefbar %fb1;
+    } else {
+      waitfbar_fnone %fb0;
+    }
+  } else {
+    waitfbar_fnone %fb0;
+  }
+
+  leavefbar %fb0;
+  barrier_fnone;
+  if (workitemflatid_u32 == 0) {
+    releasefbar %fb0;
+    releasefbar %fb1;
+  }
+
+// --- BEGIN: added to example to be accepted by parser
+};
+// --- END: added to example to be accepted by parser
+        

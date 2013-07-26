@@ -1,0 +1,46 @@
+version 1:0:$full:$small;
+function &get_global_id(arg_u32 %ret_val) (arg_u32 %arg_val0);
+function &get_local_id(arg_u32 %ret_val) (arg_u32 %arg_val0);
+function &barrier() (arg_u32 %arg_val0, arg_u32 %arg_val1);
+function &get_group_id(arg_u32 %ret_val) (arg_u32 %arg_val0);
+function &abort() ();
+kernel &__OpenCL_matrixTranspose_kernel(
+kernarg_u32 %arg_val0,
+kernarg_u32 %arg_val1,
+kernarg_u32 %arg_val2,
+kernarg_u32 %arg_val3,
+kernarg_u32 %arg_val4,
+kernarg_u32 %arg_val5)
+{
+@__OpenCL_matrixTranspose_kernel_entry:
+// BB#0: // %entry
+  workitemabsid_u32 $s0, 0;
+  workitemabsid_u32 $s1, 1;
+  ld_kernarg_u32 $s2, [%arg_val5];
+  workitemid_u32 $s3, 0;
+  workitemid_u32 $s4, 1;
+  fma_u32 $s5, $s4, $s2, $s3;
+  shl_u32 $s5, $s5, 2;
+  ld_kernarg_u32 $s6, [%arg_val2];
+  add_u32 $s5, $s6, $s5;
+  ld_kernarg_u32 $s6, [%arg_val3];
+  fma_u32 $s0, $s1, $s6, $s0;
+  shl_u32 $s0, $s0, 2;
+  ld_kernarg_u32 $s1, [%arg_val1];
+  add_u32 $s0, $s1, $s0;
+  ld_global_f32 $s0, [$s0];
+  st_group_f32 $s0, [$s5];
+  barrier;
+  workgroupid_u32 $s0, 0;
+  fma_u32 $s0, $s0, $s2, $s3;
+  workgroupid_u32 $s1, 1;
+  fma_u32 $s1, $s1, $s2, $s4;
+  ld_kernarg_u32 $s2, [%arg_val4];
+  fma_u32 $s0, $s0, $s2, $s1;
+  shl_u32 $s0, $s0, 2;
+  ld_kernarg_u32 $s1, [%arg_val0];
+  add_u32 $s0, $s1, $s0;
+  ld_group_f32 $s1, [$s5];
+  st_global_f32 $s1, [$s0];
+  ret;
+};

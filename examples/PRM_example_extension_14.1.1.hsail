@@ -1,0 +1,31 @@
+version 1:0:$full:$large;
+// extension "xyz:newext";
+kernel &max3Vector(kernarg_u32 %A,
+                   kernarg_u32 %B,
+                   kernarg_u32 %C,
+                   kernarg_u32 %D
+                  )
+{
+  workitemabsid_u32 $s0, 0; // s0 is the absolute ID
+  mul_u32 $s0, $s0, 4; // 4* absolute ID (into bytes)
+
+  ld_kernarg_u32 $s4, [%A];
+  add_u32 $s1, $s0, $s4;
+  ld_global_f32 $s10, [$s1];
+
+  ld_kernarg_u32 $s4, [%B];
+  add_u32 $s1, $s0, $s4;
+  ld_global_f32 $s11, [$s1];
+
+  ld_kernarg_u32 $s4, [%C];
+  add_u32 $s1, $s0, $s4;
+  ld_global_f32 $s12, [$s1];
+
+  // The finalizer supports new opcode:
+  // newext_max3_f32 $s11, $s10, $s11, $s12;
+
+  ld_kernarg_u32 $s4, [%D];
+  add_u32 $s10, $s0, $s4;
+  st_global_f32 $s10, [$s10];
+  ret;
+};

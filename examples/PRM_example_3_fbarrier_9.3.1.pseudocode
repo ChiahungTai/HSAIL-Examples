@@ -1,0 +1,79 @@
+version 1:0: $base : $small;
+// --- END: added to example to be accepted by parser
+
+// Example 3: Producer/consumer using two fbarriers that allow
+// producer and consumer wavefront executions to overlap.
+kernel producerConsumer()
+{
+  // Declare the fbarriers.
+  fbarrier %producer_fb;
+  fbarrier %consumer_fb;
+  // Use a single work-item to initialize the fbarriers.
+  if (workitemflatid_u32 == 0) {
+    initfbar [%produced_fb];
+    initfbar [%consumed_fb];
+  }
+  // Wait for fbarriers to be initialized before using them.
+  // No memory fence required as no data has been produced yet.
+  barrier_fnone;
+  // All work-items join both fbarriers.
+  joinfbar [%fb_produced];
+  joinfbar [%fb_consumed];
+  // Wait for all fbarriers to join to prevent a race condition
+  // between join and subsequent wait.
+  // No memory fence required as no data has been produced yet.
+  barrier_fnone;
+  // Ensure all produces and consumers are in the same wavefront
+  // so that the fbarrier operations are wavefront uniform.
+  producer = ((workitemflatid_u32 / WAVESIZE) & 1) == 1;
+  if (producer) {
+    for (i = 0 to n) {
+  // Producer compute new data.
+  // Wait until all consumers have processed the previous
+  // data before storing the new data.
+  // No need for a memory fence as consumer is producing no data
+  // used by the consumer.
+      waitfbar_fnone [%consumed_fb];
+  // fill in new data in some group segment buffer data.
+  // Tell the consumers the data is ready.
+  // Using arrive allows the producer to continue computing new data
+  // before all consumers have read this data.
+  // Memory fence should correspond to segment holding data to
+  // make sure it is visible to consumer.
+      arrivefbar_fgroup [%produced_fb];
+    } else {
+  // Tell producer ready to receive new data. This is the
+  // initial state of a consumer.
+  // No memory barrier required as consumer is not producing any data.
+      arrivefbar_fnone [%consumed_fb];
+      for (j = 0 to n) {
+  // Wait for all producers to store new data.
+  // Memory fence should correspond to segment holding data to make
+  // sure it is visible to consumer.
+        waitfbar_fgroup [%produced_fb];
+  // Consumer reads the new data
+  // Only need to tell producer have read data if there is
+  // another value to be produced.
+        if (j != n) {
+  // Tell producer have read new data.
+  // Using arrive allows the consumer to start processing the data
+  // before all consumers have read the data.
+  // No memory barrier required as consumer is not producing any data.
+        arrivefbar_fnone [%consumed_fb];
+      }
+  // Consumer processes new data.
+    }
+  }
+  // Ensure each work-item leaves the fbarriers it has
+  // joined before it terminates.
+  leavefbar %producer_fb;
+  leavefbar %consumer_fb;
+  // Wait for fbarriers to be finished with before releasing them.
+  // No memory fence required as no data has been produced.
+  barrier_fnone;
+  // Use a single work-item to release the fbarriers.
+  if (workitemflatid_u32 == 0) {
+    releasefbar %produced_fb;
+    releasefbar %consumed_fb;
+  }
+}

@@ -1,0 +1,54 @@
+version 1:0:$full:$small;
+group_f32 &xarray[100]; // the library gets part of this array
+extern function &libfoo(arg_u32 %res) (arg_u32 %sptr);
+static function &a()(arg_u32 %formal);
+kernel &main()
+{
+  {
+  arg_u32 %in;
+  // give the library part of the group memory
+  lda_group_u32 $s1, [&xarray][4];
+  st_arg_u32 $s1, [%in];
+  arg_u32 %out;
+  call &libfoo(%out)(%in);
+  ld_arg_u32 $s2, [%out];
+  }
+  {
+  arg_u32 %in1;
+  st_arg_u32 $s2, [%in1];
+  call &a(%in1);
+  // $s2 has the library call result
+  }
+  // ...
+};
+
+static function &a ()(arg_u32 %formal)
+{
+  // get the result of the library call
+  ld_arg_u32 $s1, [%formal];
+  // ...
+};
+
+// now for the second compile unit - the library
+static function &l1()(arg_u32 %input);
+function &libfoo(arg_u32 %res) (arg_u32 %sptr)
+{
+  ld_arg_u32 $s1, [%sptr];
+  ld_group_u32 $s2, [$s1]; // library reads some group data
+  st_group_u32 $s2, [$s1+4]; // library reads some group data
+  {
+  arg_u32 %s;
+  // give a function in the library part of the shared array
+  add_u32 $s4, $s2, 20;
+  st_arg_u32 $s2, [%s];
+  call &l1(%s);
+  }
+  // ...
+};
+
+static function &l1()(arg_u32 %input)
+{
+  ld_arg_u32 $s6, [%input];
+// library passed address in group memory is now $s6
+// ...
+};

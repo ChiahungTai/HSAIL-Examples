@@ -1,0 +1,813 @@
+// Version has to come first
+version 1:0: $base : $small;
+
+// Extensions have to come next
+
+// 14.1
+// Comment out "foo:bar" as only available if finalizer supports this extension.
+// extension "foo:bar";
+
+// 14.1.1
+// Comment out "CORE" as that would prevent IMAGE being used.
+// extension "CORE";
+
+// 14.1.1
+extension "IMAGE";
+
+// from 10.1.2
+function &compare (arg_f32 %res) (arg_f32 %left, arg_f32 %right)
+{
+  ld_arg_f32 $s0, [%left];
+  ld_arg_f32 $s1, [%right];
+  cmp_eq_f32_f32 $s0, $s1, $s0;
+  st_arg_f32 $s0, [%res];
+  ret;
+};
+
+kernel &prm_snippets()
+{
+// --- END: added to example to be accepted by parser
+
+// 14.6
+// Directives have to come first
+enablebreakexceptions 0;
+enabledetectexceptions 0;
+maxdynamicgroupsize 64;
+maxflatgridsize 64;
+maxflatworkgroupsize 64;
+requestedworkgroupspercu 2;
+requireddim 3;
+requiredgridsize 64, 64, 64;
+requiredworkgroupsize 64, 64, 64;
+requirenopartialworkgroups;
+
+// 4.3.4
+private_u32 %z;
+ret;
+
+// 5.2
+abs_s32 $s1, $s2;
+abs_s64 $d1, $d2;
+neg_s32 $s1, 100;
+neg_s64 $d1, $d2;
+add_s32 $s1, 42, $s2;
+add_u32 $s1, $s2, 0x23;
+add_s64 $d1, $d2, 23;
+add_u64 $d1, 61, 0x233412349456;
+div_s32 $s1, 100, 10;
+div_u32 $s1, $s2, 0x23;
+div_s64 $d1, $d2, 23;
+div_u64 $d1, $d3, 0x233412349456;
+max_s32 $s1, 100, 10;
+max_u32 $s1, $s2, 0x23;
+max_s64 $d1, $d2, 23;
+max_u64 $d1, $d3, 0x233412349456;
+min_s32 $s1, 100, 10;
+min_u32 $s1, $s2, 0x23;
+min_s64 $d1, $d2, 23;
+min_u64 $d1, $d3, 0x233412349456;
+mul_s32 $s1, 100, 10;
+mul_u32 $s1, $s2, 0x23;
+mul_s64 $d1, $d2, 23;
+mul_u64 $d1, $d3, 0x233412349456;
+mulhi_s32 $s1, $s3, $s3;
+mulhi_u32 $s1, $s2, $s9;
+rem_s32 $s1, 100, 10;
+rem_u32 $s1, $s2, 0x23;
+rem_s64 $d1, $d2, 23;
+rem_u64 $d1, $d3, 0x233412349456;
+sub_s32 $s1, 100, 10;
+sub_u32 $s1, $s2, 0x23;
+sub_s64 $d1, $d2, 23;
+sub_u64 $d1, $d3, 0x233412349456;
+
+abs_p_s8x4 $s1, $s2;
+abs_p_u32x2 $d1, $d1;
+neg_s_u8x4 $s1, $s2;
+neg_s_sat_u8x4 $s1, $s2;
+add_pp_sat_u16x2 $s1, $s0, $s3;
+add_pp_sat_u16x4 $d1, $d0, $d3;
+mul_pp_u16x4 $d1, $d0, $d3;
+mulhi_pp_u8x8 $d1, $d3, $d4;
+sub_sp_u8x8 $d1, $d0, $d3;
+max_pp_u8x4 $s1, $s0, $s3;
+min_pp_u8x4 $s1, $s0, $s3;
+
+// 5.3
+
+mad_s32 $s1, $s2, $s3, $s5;
+mad_s64 $d1, $d2, $d3, $d2;
+mad_u32 $s1, $s2, $s3, $s3;
+mad_u64 $d1, $d2, $d3, $d1;
+
+// 5.4
+mad24_s32 $s1, $s2, -12, 23;
+mad24_u32 $s1, $s2, 12, 2;
+mad24hi_s32 $s1, $s2, -12, 23;
+mad24hi_u32 $s1, $s2, 12, 2;
+mul24_s32 $s1, $s2, -12;
+mul24_u32 $s1, $s2, 12;
+mul24hi_s32 $s1, $s2, -12;
+mul24hi_u32 $s1, $s2, 12;
+
+// 5.5
+shl_u32 $s1, $s2, 2;
+shl_u64 $d1, $d2, 2;
+shl_s32 $s1, $s2, 2;
+shl_s64 $d1, $d2, 2;
+shr_u32 $s1, $s2, 2;
+shr_u64 $d1, $d2, 2;
+shr_s32 $s1, $s2, 2;
+shr_s64 $d1, $d2, 2;
+shl_u8x8 $d0, $d1, 2;
+shl_u8x4 $s1, $s2, 2;
+shl_u8x8 $d1, $d2, 1;
+shr_u8x4 $s1, $s2, 1;
+shr_u8x8 $d1, $d2, 2;
+
+// 5.6
+and_b1 $c0, $c2, $c3;
+and_b32 $s0, $s2, $s3;
+and_b64 $d0, $d1, $d2;
+or_b1 $c0, $c2, $c3;
+or_b32 $s0, $s2, $s3;
+or_b64 $d0, $d1, $d2;
+xor_b1 $c0, $c2, $c3;
+xor_b32 $s0, $s2, $s3;
+xor_b64 $d0, $d1, $d2;
+not_b1 $c1, $c2;
+not_b32 $s0, $s2;
+not_b64 $d0, $d1;
+popcount_u32_b32 $s1, $s2;
+popcount_u32_b64 $s1, $d2;
+
+// 5.7
+
+bitrev_b32 $s1, $s2;
+bitrev_b64 $d1, 0x234;
+bitextract_s32 $s1, $s1, 2, 3;
+bitextract_u64 $d1, $d1, $s1, $s2;
+bitinsert_s32 $s1, $s1, $s2, 2, 3;
+bitinsert_u64 $d1, $d2, $d3, $s1, $s2;
+bitmask_b32 $s0, $s1, $s2;
+bitselect_b32 $s3, $s0, $s3, $s4;
+firstbit_u32_s32 $s0, $s0;
+firstbit_u32_u64 $s0, $d6;
+lastbit_u32_u32 $s0, $s0;
+lastbit_u32_s64 $s0, $d6;
+
+// 5.8
+
+combine_v2_b64_b32 $d0, ($s0, $s1);
+combine_v4_b128_b32 $q0, ($s0, $s1, $s2, $s3);
+combine_v2_b128_b64 $q0, ($d0, $d1);
+expand_v2_b32_b64 ($s0, $s1), $d0;
+expand_v4_b32_b128 ($s0, $s1, $s2, $s3), $q0;
+expand_v2_b64_b128 ($d0, $d1), $q0;
+lda_private_u32 $s1, [&p];
+global_u32 %g[3];
+lda_global_u64 $d1, [%g];
+stof_global_u64_u64 $d0, $d1;
+lda_global_u64 $d1, [$d1 + 8];
+ldc_u64 $d1, &some_function;
+ldc_u32 $s2, @lab;
+// ...
+@lab:
+mov_b1 $c1, 0;
+mov_b32 $s1, 0;
+mov_b32 $s1, 0.0f;
+mov_b64 $d1, 0;
+mov_b64 $d1, 0.0;
+
+// 5.9
+
+shuffle_u8x4 $s10, $s12, $s12, 0x55;
+unpacklo_u8x4 $s1, $s2, 72;
+unpackhi_f16x2 $s3, $s3,$s4;
+// Packing with no conversions:
+pack_f32x2_f32 $d1, $d1, $s2, 1;
+pack_f32x4_f32 $q1, $q2, $s2, 3;
+pack_u32x2_u32 $d1, $d2, $s1, 2;
+pack_s64x2_s64 $q1, $q1, $d1, $s1;
+// Packing with integer truncation:
+pack_u8x4_u32 $s1, $s2, $s3, 2;
+pack_s16x4_s64 $d1, $d1, $d2, 0;
+pack_u32x2_u64 $d1, $d2, $d3, 0;
+// Packing an f16 and converting from the
+// implementation-defined register representation:
+pack_f16x2_f16 $s1, $s2, $s3, 1;
+pack_f16x4_f16 $d1, $d2, $s3, 3;
+// Unpacking with no conversions:
+unpack_f32_f32x2 $s1, $d2, 1;
+unpack_f32_f32x4 $s1, $q2, 3;
+unpack_u32_u32x4 $s1, $q1, 2;
+unpack_s64_s64x2 $d1, $q1, 0;
+// Unpacking with integer sign or zero extension:
+unpack_u32_u8x4 $s1, $s2, 2;
+unpack_s32_s16x4 $s1, $d1, 0;
+unpack_u64_u32x4 $d1, $q1, 2;
+unpack_s64_s32x2 $d1, $d2, 0;
+// Unpacking an f16 and converting to the
+// implementation-defined register representation:
+unpack_f16_f16x2 $s1, $s2, 1;
+unpack_f16_f16x4 $s1, $d2, 3;
+
+// 5.10
+
+cmov_b32 $s1, $c3, $s1, $s2;
+cmov_b64 $d1, $c3, $d1, $d2;
+cmov_b32 $s1, $c0, $s1, $s2;
+cmov_u8x4 $s1, $s0, $s1, $s2;
+cmov_s8x4 $s1, $s0, $s1, $s2;
+cmov_s8x8 $d1, $d0, $d1, $d2;
+
+// 5.11
+
+abs_f32 $s1,$s2;
+abs_f64 $d1,$d2;
+add_f32 $s3,$s2,$s1;
+add_f64 $d3,$d2,$d1;
+copysign_f32 $s3,$s2,$s1;
+copysign_f64 $d3,$d2,$d1;
+div_f32 $s3,1.0f,$s1;
+div_f64 $d3,1.0,$d0;
+fma_f32 $s3,1.0f,$s1,23.0f;
+fma_f64 $d3,1.0,$d0, $d3;
+max_f32 $s3,1.0f,$s1;
+max_f64 $d3,1.0,$d0;
+min_f32 $s3,1.0f,$s1;
+min_f64 $d3,1.0,$d0;
+mul_f32 $s3,1.0f,$s1;
+mul_f64 $d3,1.0,$d0;
+neg_f32 $s3,1.0f;
+neg_f64 $d3,1.0;
+sub_f32 $s3,1.0f,$s1;
+sub_f64 $d3,1.0,$d0;
+fract_f32 $s0, 3.2f;
+
+// 5.12
+
+class_b1_f32 $c1, $s1, 3;
+class_b1_f32 $c1, $s1, $s2;
+class_b1_f64 $c1, $d1, $s2;
+class_b1_f64 $c1, $d1, 3;
+
+// 5.13
+ncos_f32 $s1, $s0;
+nexp2_f32 $s1, $s0;
+nfma_f32 $s3, 1.0f, $s1, 23.0f;
+nfma_f64 $d3, 1.0L, $d0, $d3;
+nlog2_f32 $s1, $s0;
+nrcp_f32 $s1, $s0;
+nrsqrt_f32 $s1, $s0;
+nsin_f32 $s1, $s0;
+
+// 5.14
+bitalign_b32 $s5, $s0, $s1, $s2;
+bytealign_b32 $s5, $s0, $s1, $s2;
+lerp_u8x4 $s5, $s0, $s1, $s2;
+packcvt_u8x4_f32 $s1, $s2, $s3, $s9, $s3;
+unpackcvt_f32_u8x4 $s5, $s0, 0;
+unpackcvt_f32_u8x4 $s5, $s0, 1;
+unpackcvt_f32_u8x4 $s5, $s0, 2;
+unpackcvt_f32_u8x4 $s5, $s0, 3;
+sad_u32_u32 $s5, $s0, $s1, $s6;
+sad_u32_u16x2 $s5, $s0, $s1, $s6;
+sad_u32_u8x4 $s5, $s0, $s1, $s6;
+sadhi_u16x2_u8x4 $s5, $s0, $s1, $s6;
+
+// 5.15
+segmentp_private_b1_u32 $c1, $s0; // small machine model
+segmentp_global_b1_u32 $c1, $s0; // small machine model
+segmentp_group_b1_u64 $c1, $d0; // large machine model
+
+// 5.16
+// large machine model conversions
+stof_private_u64_u32 $d1, $s1;
+ftos_group_u32_u64 $s1, $d2;
+ftos_global_u64_u64 $d1, $d2;
+// small machine model conversions
+stof_private_u32_u32 $s1, $s2;
+ftos_group_u32_u32 $s1, $s2;
+ftos_global_u32_u32 $s1, $s2;
+
+// 5.17
+
+cmp_eq_b1_b1 $c1, $c2, 0;
+cmp_eq_u32_b1 $s1, $c2, 0;
+cmp_eq_s32_b1 $s1, $c2, 1;
+cmp_eq_f32_b1 $s1, $c2, 1;
+cmp_ne_b1_b1 $c1, $c2, 0;
+cmp_ne_u32_b1 $s1, $c2, 0;
+cmp_ne_s32_b1 $s1, $c2, 0;
+cmp_ne_f32_b1 $s1, $c2, 1;
+cmp_lt_b1_u32 $c1, $s2, 0;
+cmp_lt_u32_s32 $s1, $s2, 0;
+cmp_lt_s32_s32 $s1, $s2, 0;
+cmp_lt_f32_f32 $s1, $s2, 0.0f;
+cmp_gt_b1_u32 $c1, $s2, 0;
+cmp_gt_u32_s32 $s1, $s2, 0;
+cmp_gt_s32_s32 $s1, $s2, 0;
+cmp_gt_f32_f32 $s1, $s2, 0.0f;
+cmp_equ_b1_f32 $c1, $s2, 0.0f;
+cmp_equ_b1_f64 $c1, $d1, $d2;
+cmp_sltu_b1_f32 $c1, $s2, 0.0f;
+cmp_sltu_b1_f64 $c1, $d1, $d2;
+cmp_lt_pp_u8x4_u8x4 $s1, $s2, $s3;
+cmp_lt_pp_u16x2_f16x2 $s1, $s2, $s3;
+cmp_lt_pp_u32x2_f32x2 $d1, $d2, $d3;
+
+// 5.18
+
+cvt_f32_f64 $s1, $d1;
+cvt_upi_u32_f32 $s1, $s2;
+cvt_ftz_f32_f32 $s1, $s2;
+cvt_u32_f32 $s1, $s2;
+cvt_f16_f32 $s1, $s2;
+cvt_s32_u8 $s1, $s2;
+cvt_s32_b1 $s1, $c2;
+cvt_f32_f16 $s1, $s2;
+cvt_s32_f32 $s1, $s2;
+cvt_ftz_upi_s8_f32 $s1, $s2;
+
+// 6.2
+
+ld_global_f32 $s1, [&x];
+ld_global_s32 $s1, [&x];
+ld_global_f16 $s1, [&x];
+ld_global_f64 $d1, [&x];
+ld_global_aligned_f64 $d1, [&x];
+ld_width(WAVESIZE)_global_f16 $s1, [&x];
+ld_width(all)_global_aligned_f16 $s1, [&x];
+ld_global_acq_f32 $s1, [&x];
+ld_global_acq_f64 $d1, [&x];
+ld_global_acq_equiv(2)_f32 $s1, [&x];
+ld_global_acq_equiv(2)_f32 $s1, [$s3+4];
+ld_arg_acq_equiv(2)_f32 $s1, [&y];
+ld_private_f32 $s1, [$s3+4];
+ld_spill_f32 $s1, [$s3+4];
+ld_f32 $s1, [$s3+4];
+ld_aligned_f32 $s1, [$s3+4];
+ld_v3_s32 ($s1,$s1,$s6), [$s3+4];
+ld_v4_f32 ($s1,$s1,$s6,$s2), [$s3+4];
+ld_v2_equiv(9)_f32 ($s1,$s2), [$s3+4];
+ld_group_equiv(0)_u32 $s0, [$s2];
+ld_equiv(1)_u64 $d3, [$s4+32];
+ld_v2_equiv(1)_u64 ($d1,$d2), [$s0+32];
+ld_v4_width(8)_f32 ($s1,$s1,$s6,$s2), [$s3+4];
+ld_equiv(1)_u64 $d6, [128];
+ld_v2_width(4)_equiv(9)_f32 ($s1,$s2), [$s3+4];
+ld_width(64)_u32 $s0, [$s2];
+ld_width(1024)_equiv(1)_u64 $d6, [128];
+ld_width(all)_equiv(1)_u64 $d6, [128];
+ld_readonly_rwimg $d1, [&rwimage1];
+ld_global_roimg $d2, [&roimage1];
+ld_kernarg_samp $d3, [&sampler1];
+
+// 6.3
+st_global_f32 $s1, [&x];
+st_global_aligned_f32 $s1, [&x];
+st_global_u8 $s1, [&x];
+st_global_u16 $s1, [&x];
+st_global_u32 $s1, [&x];
+st_global_f16 $s1, [&x];
+st_global_f64 $d1, [&x];
+st_global_aligned_f64 $d1, [&x];
+st_global_rel_f32 $s1, [&x];
+st_global_rel_f64 $d1, [&x];
+st_global_rel_equiv(2)_f32 $s1, [&x];
+st_rel_equiv(2)_f32 $s1, [$s3+4];
+st_private_f32 $s1, [$s3+4];
+st_global_f32 $s1, [$s3+4];
+st_spill_f32 $s1, [$s3+4];
+st_arg_f32 $s1, [$s3+4];
+st_f32 $s1, [$s3+4];
+st_aligned_f32 $s1, [$s3+4];
+st_v4_f32 ($s1,$s1,$s6,$s2), [$s3+4];
+st_v2_equiv(9)_f32 ($s1,$s2), [$s3+4];
+st_v3_s32 ($s1,$s1,$s6), [$s3+4];
+st_group_equiv(0)_u32 $s0, [$s2];
+st_equiv(1)_u64 $d3, [$s4+32];
+st_aligned_equiv(1)_u64 $d3, [$s4+32];
+st_v2_equiv(1)_u64 ($d1,$d2), [$s0+32];
+st_equiv(1)_u64 $d6, [128];
+st_group_rwimg $d1, [&rwimage2];
+st_private_rwimg $d1, [&rwimage2];
+st_global_roimg $d2, [&roimage2];
+st_kernarg_samp $d3, [&sampler2];
+
+// 6.4
+atomic_and_global_ar_u32 $s1, [&x], 23;
+atomic_and_global_u32 $s1, [&x], 23;
+atomic_and_group_u32 $s1, [&x], 23;
+atomic_and_u32 $s1, [$s2], 23;
+atomic_or_global_ar_u64 $d1, [&x], 23;
+atomic_or_global_u64 $d1, [&x], 23;
+atomic_or_group_u64 $d1, [&x], 23;
+atomic_or_u64 $d1, [$s4], 23;
+atomic_xor_global_ar_b64 $d1, [&x], 23;
+atomic_xor_global_b64 $d1, [&x], 23;
+atomic_xor_group_u64 $d1, [&x], 23;
+atomic_xor_u64 $d1, [$s3], 23;
+atomic_cas_global_ar_b64 $d1, [&x], 23, 12;
+atomic_cas_global_b64 $d1, [&x], 23, 1;
+atomic_cas_group_u64 $d1, [&x], 23, 9;
+atomic_cas_u64 $d1, [$s5], 23, 12;
+atomic_exch_global_ar_b64 $d1, [&x], 23;
+atomic_exch_global_b64 $d1, [&x], 23;
+atomic_exch_group_u64 $d1, [&x], 23;
+atomic_exch_u64 $d1, [$s4], 23;
+atomic_add_global_ar_b64 $d1, [&x], 23;
+atomic_add_global_b64 $d1, [&x], 23;
+atomic_add_group_u64 $d1, [&x], 23;
+atomic_add_u64 $d1, [$s6], 23;
+atomic_sub_global_ar_b64 $d1, [&x], 23;
+atomic_sub_global_b64 $d1, [&x], 23;
+atomic_sub_group_u64 $d1, [&x], 23;
+atomic_sub_u64 $d1, [$s3], 23;
+atomic_inc_global_ar_b64 $d1, [&x], 23;
+atomic_inc_global_b64 $d1, [&x], 23;
+atomic_inc_group_u64 $d1, [&x], 23;
+atomic_inc_u64 $d1, [$s3], 23;
+atomic_dec_global_ar_b64 $d1, [&x], 23;
+atomic_dec_global_b64 $d1, [&x], 23;
+atomic_dec_group_u64 $d1, [&x], 23;
+atomic_dec_u64 $d1, [$s4], 23;
+atomic_max_global_ar_s64 $d1, [&x], 23;
+atomic_max_global_b64 $d1, [&x], 23;
+atomic_max_group_u64 $d1, [&x], 23;
+atomic_max_u64 $d1, [$s5], 23;
+atomic_min_global_ar_s64 $d1, [&x], 23;
+atomic_min_global_b64 $d1, [&x], 23;
+atomic_min_group_u64 $d1, [&x], 23;
+atomic_and_global_ar_b32 $s1, [&x], 23;
+atomic_and_global_b32 $s1, [&x], 23;
+atomic_and_group_b32 $s1, [&x], 23;
+atomic_and_b32 $s1, [$s2], 23;
+atomic_or_global_ar_b64 $d1, [&x], 23;
+atomic_or_global_b64 $d1, [&x], 23;
+atomic_or_group_b64 $d1, [&x], 23;
+atomic_or_b64 $d1, [$s4], 23;
+atomic_xor_global_ar_b64 $d1, [&x], 23;
+atomic_xor_global_b64 $d1, [&x], 23;
+atomic_xor_group_b64 $d1, [&x], 23;
+atomic_xor_b64 $d1, [$s3], 23;
+atomic_cas_global_ar_b64 $d1, [&x], 23, 12;
+atomic_cas_global_b64 $d1, [&x], 23, 1;
+atomic_cas_group_b64 $d1, [&x], 23, 9;
+atomic_cas_b64 $d1, [$s5], 23, 12;
+atomic_exch_global_ar_b64 $d1, [&x], 23;
+atomic_exch_global_b64 $d1, [&x], 23;
+atomic_exch_group_b64 $d1, [&x], 23;
+atomic_exch_b64 $d1, [$s4], 23;
+atomic_add_global_ar_u64 $d1, [&x], 23;
+atomic_add_global_s64 $d1, [&x], 23;
+atomic_add_group_u64 $d1, [&x], 23;
+atomic_add_s64 $d1, [$s6], 23;
+atomic_sub_global_ar_u64 $d1, [&x], 23;
+atomic_sub_global_s64 $d1, [&x], 23;
+atomic_sub_group_u64 $d1, [&x], 23;
+atomic_sub_s64 $d1, [$s3], 23;
+atomic_inc_global_ar_u64 $d1, [&x], 23;
+atomic_inc_global_u64 $d1, [&x], 23;
+atomic_inc_group_u64 $d1, [&x], 23;
+atomic_inc_u64 $d1, [$s3], 23;
+atomic_dec_global_ar_u64 $d1, [&x], 23;
+atomic_dec_global_u64 $d1, [&x], 23;
+atomic_dec_group_u64 $d1, [&x], 23;
+atomic_dec_u64 $d1, [$s4], 23;
+atomic_max_global_ar_s64 $d1, [&x], 23;
+atomic_max_global_u64 $d1, [&x], 23;
+atomic_max_group_s64 $d1, [&x], 23;
+atomic_max_u64 $d1, [$s5], 23;
+atomic_min_global_ar_s64 $d1, [&x], 23;
+atomic_min_global_u64 $d1, [&x], 23;
+atomic_min_group_s64 $d1, [&x], 23;
+atomic_min_u64 $d1, [$s7], 23;
+atomic_min_u64 $d1, [$s7], 23;
+
+// 6.6
+
+atomicnoret_and_global_ar_b32 [&x], 23;
+atomicnoret_and_global_b32 [&x], 23;
+atomicnoret_and_group_b32 [&x], 23;
+atomicnoret_and_b32 [$s1], 23;
+atomicnoret_or_global_ar_b64 [&x], 23;
+atomicnoret_or_global_b64 [&x], 23;
+atomicnoret_or_group_b64 [&x], 23;
+atomicnoret_or_b64 [$s2], 23;
+atomicnoret_xor_global_ar_b64 [&x], 23;
+atomicnoret_xor_global_b64 [&x], 23;
+atomicnoret_xor_group_b64 [&x], 23;
+atomicnoret_xor_b64 [$s3], 23;
+atomicnoret_cas_global_ar_b64 [&x], 23, 12;
+atomicnoret_cas_global_b64 [&x], 23, 1;
+atomicnoret_cas_group_u64 [&x], 23, 9;
+atomicnoret_cas_u64 [$s2], 23, 12;
+atomicnoret_add_global_ar_u64 [&x], 23;
+atomicnoret_add_global_s64 [&x], 23;
+atomicnoret_add_group_u64 [&x], 23;
+atomicnoret_add_s64 [$s4], 23;
+atomicnoret_sub_global_ar_u64 [&x], 23;
+atomicnoret_sub_global_s64 [&x], 23;
+atomicnoret_sub_group_u64 [&x], 23;
+atomicnoret_sub_s64 [$s5], 23;
+atomicnoret_inc_global_ar_u64 [&x], 23;
+atomicnoret_inc_global_u64 [&x], 23;
+atomicnoret_inc_group_u64 [&x], 23;
+atomicnoret_inc_u64 [$s2], 23;
+atomicnoret_dec_global_ar_u64 [&x], 23;
+atomicnoret_dec_global_u64 [&x], 23;
+atomicnoret_dec_group_u64 [&x], 23;
+atomicnoret_dec_u64 [$s6], 23;
+atomicnoret_max_global_ar_u64 [&x], 23;
+atomicnoret_max_global_s64 [&x], 23;
+atomicnoret_max_group_u64 [&x], 23;
+atomicnoret_max_s64 [$s3], 23;
+atomicnoret_min_global_ar_u64 [&x], 23;
+atomicnoret_min_global_s64 [&x], 23;
+atomicnoret_min_group_u64 [&x], 23;
+atomicnoret_min_s64 [$s4], 23;
+
+// 7.2
+
+ld_global_rwimg $d1, [%rwimg1];
+ld_kernarg_roimg $d2, [%roimg2];
+ld_readonly_samp $d3, [%samp1];
+rdimage_v4_1d_s32_rwimg_f32 ($s0, $s1, $s5, $s3), $d1, $d3, $s6;
+rdimage_v4_1da_s32_rwimg_f32 ($s0, $s1, $s2, $s3), $d1, $d3, ($s6, $s7);
+rdimage_v4_2da_s32_rwimg_f32 ($s0, $s1, $s3, $s4), $d1, $d3, ($s6, $s9, $s12);
+rdimage_v4_2d_s32_roimg_f32 ($s0, $s1, $s3, $s4), $d2, $d3, ($s6, $s9);
+rdimage_v4_3d_s32_roimg_f32 ($s0, $s1, $s3, $s4), $d2, $d3, ($s6, $s9, $s2);
+
+// 7.3
+
+ld_global_rwimg $d1, [%rwimg1];
+ld_kernarg_roimg $d2, [%roimg2];
+ldimage_v4_3d_f32_rwimg_u32 ($s1, $s2, $s3, $s4), $d1, ($s4, $s5, $s6);
+ldimage_v4_1da_f32_rwimg_u32 ($s1, $s2, $s3, $s4), $d1, ($s4, $s5);
+ldimage_v4_1db_f32_roimg_u32 ($s1, $s2, $s3, $s4), $d2, $s4;
+ldimage_v4_2da_f32_roimg_u32 ($s1, $s2, $s3, $s4), $d2, ($s4, $s1, $s2); 
+
+// 7.4
+
+ld_global_rwimg $d1, [%rwimg1];
+stimage_v4_3d_f32_rwimg_u32 ($s1, $s2, $s3, $s4), $d1, ($s4, $s5, $s6);
+stimage_v4_2da_f32_rwimg_u32 ($s1, $s2, $s3, $s4), $d1, ($s4, $s5, $s6);
+stimage_v4_1da_f32_rwimg_u32 ($s1, $s2, $s3, $s4), $d1, ($s4, $s5);
+stimage_v4_1db_f32_rwimg_u32 ($s1, $s2, $s3, $s4), $d1, $s4;
+st_arg_rwimg $d1, [%rwimg_arg1];
+
+// 7.5
+ld_global_rwimg $d1, [%rwimg1];
+ld_global_rwimg $d2, [%rwimg2];
+atomicimage_and_3d_b32_rwimg_u32 $s1, $d1, ($s0, $s3, $s1), $s1;
+atomicimage_and_2d_b32_rwimg_u32 $s2, $d1, ($s0, $s3), $s2;
+atomicimage_and_1d_b32_rwimg_u32 $s3, $d1, $s1, $s10;
+atomicimage_or_1d_b32_rwimg_u32 $s3, $d1, $s1, $s3;
+atomicimage_xor_1db_b32_rwimg_u32 $s0, $d1, $s1, $s3;
+atomicimage_add_3d_s32_rwimg_u32 $s4, $d1, ($s0, $s3, $s1), $s2;
+atomicimage_sub_2d_s64_rwimg_u32 $d3, $d2, ($s0, $s3), $d4;
+atomicimage_min_1d_u64_rwimg_u32 $d3, $d2, $s1, $d4;
+atomicimage_max_1da_u64_rwimg_u32 $d3, $d2, ($s1, $s2), $d4;
+atomicimage_exch_2da_b64_rwimg_u32 $d3, $d2, ($s1, $s2, $s3), $d4;
+atomicimage_cas_1d_b32_rwimg_u32 $s10, $d1, $s1, $s3, $s4;
+
+// 7.6
+ld_global_rwimg $d1, [%rwimg1];
+ld_global_rwimg $d2, [%rwimg2];
+atomicimagenoret_and_3d_b32_rwimg_u32 $d1, ($s0, $s3, $s1), $s1;
+atomicimagenoret_and_2d_b32_rwimg_u32 $d1, ($s0, $s3), $s2;
+atomicimagenoret_and_1d_b32_rwimg_u32 $d1, $s1, $s10;
+atomicimagenoret_or_1d_b32_rwimg_u32 $d1, $s1, $s3;
+atomicimagenoret_xor_1db_b32_rwimg_u32 $d1, ($s1, $s2), $s3;
+atomicimagenoret_add_3d_s32_rwimg_u32 $d1, ($s0, $s3, $s1), $s2;
+atomicimagenoret_sub_2d_s64_rwimg_u32 $d2, ($s0, $s3), $d4;
+atomicimagenoret_min_1d_u64_rwimg_u32 $d2, $s1, $d4;
+atomicimagenoret_max_1da_u64_rwimg_u32 $d2, ($s1, $s2), $d4;
+atomicimagenoret_cas_1d_b32_rwimg_u32 $d1, $s1, $s3, $s4;
+
+// 7.7
+
+ld_global_rwimg $d1, [%rwimg1];
+ld_kernarg_roimg $d2, [%roimg2];
+ld_readonly_samp $d3, [%samp1];
+queryimagewidth_u32_rwimg $s1, $d1;
+queryimageheight_u32_rwimg $s0, $d1;
+queryimagedepth_u32_rwimg $s0, $d1;
+queryimagearray_u32_roimg $s1, $d2;
+queryimageorder_u32_roimg $s0, $d2;
+queryimageformat_u32_roimg $s0, $d2;
+querysamplerboundary_u32_samp $s0, $d3, 1;
+querysamplercoord_u32_samp $s0, $d3;
+querysamplerfilter_u32_samp $s0, $d3;
+
+// 8.2
+cbr_width(2) $c0, @label;
+cbr_width(all) $c0, @label;
+cbr $c0, @label;
+brn @label2;
+cbr $c1, $s1;
+cbr_width(2) $c1, $s1;
+cbr_width(all) $c1, $s1;
+global_u32 %jumptable[3] = {@label, @label2, @label3};
+global_u32 %jumptable2[3] = {@label, @label2, @label3};
+cbr $c1, $s1, [@targets];
+cbr_width(2) $c1, $s1, [%jumptable];
+cbr_width(all) $c1, $s1, [@targets];
+@targets: labeltargets @label1, @label2, @label3;
+brn $s1, [@targets];
+brn $s1, [%jumptable2];
+// ...
+@label1:
+// ...
+@label2:
+// ...
+@label3:
+// ...
+
+// 9.2
+
+barrier;
+barrier_width(64);
+barrier_fgroup;
+barrier_fglobal;
+
+// 9.3
+
+fbarrier %fb;
+initfbar %fb;
+joinfbar %fb;
+waitfbar_fglobal %fb;
+waitfbar %fb;
+arrivefbar_fpartial %fb;
+leavefbar %fb;
+releasefbar %fb;
+ldf_u32 $s0, %fb;
+joinfbar $s0;
+
+// 9.4
+sync;
+sync_fgroup;
+st_global_u32 1, [&x];
+sync; // will wait till 1 is stored into memory
+
+// 9.5.2
+
+countlane_u32 $s1, $s2;
+masklane_b64 $d1, $s0;
+countuplane_u32 $s1;
+sendlane_b32 $s1, $s2, 3;
+sendlane_b32 $s1, 3, $s2;
+sendlane_b32 $s1, $s2, $s2;
+receivelane_b32 $s1, $s2, $s2;
+receivelane_b32 $s1, 23, $s2;
+
+// 10.1.2
+
+// Call a compare function with two floating-point arguments
+// Allocate multiple arg objects to hold arguments
+
+// ...
+{
+  arg_f32 %a;
+  arg_f32 %b;
+  // Fill in the arguments
+  st_arg_f32 4.0f, [%a];
+  st_arg_f32 $s0, [%b];
+  arg_f32 %res;
+  call &compare (%res)(%a, %b);
+  ld_arg_f32 $s0, [%res];
+} // End argument scope
+// More code
+
+// 10.6
+{
+arg_u32 %x; // holds one 32-bit integer value
+arg_f64 %y[3]; // holds three 64-bit float doubles
+align 8 arg_b8 %a[16]; // holds 16 bytes on an 8-byte boundary
+}
+
+// 11.3
+syscall_u32 $s1, 3, $s2, $s3, $s4;
+syscall_u64 $d1, 10, $d2, 100, $d4;
+
+// 11.4
+alloca_private_u32 $s1, 24;
+
+// 12.3 Special Operations
+clock_u64 $d6; // return the current time
+debugtrap_u32 $s1; // halt and transfer control to debugger
+cuid_u32 $s7; // access the compute unit id within the
+// HSA component
+maxcuid_u32 $s6; // access number of compute units on the
+// HSA component
+waveid_u32 $s3; // access the wavefront ID within the
+// HSA component
+maxwaveid_u32 $s4; // access the maximum number of waves
+// that can be executing at the same
+// time by the HSA component
+dispatchid_u64 $d0; // access the dispatch ID
+dispatchptr_global_u64 $d0; // access the address of the
+// AQL dispatch packet
+laneid_u32 $s1; // access the lane ID
+qid_u32 $s0; // access the queue ID
+cleardetectexcept_u32 $s0;
+getdetectexcept_u32 $s1;
+setdetectexcept_u32 $s2;
+nop; // no operation
+nullptr_group_u32 $s0; // null pointer value for group segment
+nullptr_global_u64 $d1; // null pointer value for global segment
+gridsize_u32 $s2, 2; // access the number of work-items in the
+// grid Z dimension
+gridgroups_u32 $s2, 2; // access the number of work-groups in the
+// grid Z dimension
+workgroupsize_u32 $s1, 0; // access the number of work-items in the
+// non-partial work-groups in the X dimension
+currentworkgroupsize_u32 $s1, 0; // access the number of work-items in
+// the current work-group in the X
+// dimension, which might be partial
+workitemabsid_u32 $s1, 0; // access the work-item absolute ID in the
+// X dimension
+workgroupid_u32 $s1, 0; // access the work-group ID in the X dimension
+workgroupid_u32 $s1, 1; // access the work-group ID in the Y dimension
+workgroupid_u32 $s1, 2; // access the work-group ID in the Z dimension
+workitemid_u32 $s1, 0; // access the work-item ID in the X dimension
+workitemid_u32 $s1, 1; // access the work-item ID in the Y dimension
+workitemid_u32 $s1, 2; // access the work-item ID in the Z dimension
+
+// 14.3
+
+file 1 "this is a file";
+
+// 14.4
+
+loc 1 20 0; // file 1 line 20
+
+// 14.6
+
+pragma "string";
+
+// --- BEGIN: added to example to be accepted by parser
+};
+// --- END: added to example to be accepted by parser        
+
+// 14.2.2
+block "debug"
+blocknumeric_b8 255, 23, 10, 23;
+blocknumeric_b32 1255, 0x323, 10, 23;
+blocknumeric_b64 0x123456781, 0x323, 10, 23;
+blockstring "this is a string";
+endblock;
+
+
+// from 5.11
+// version 1:0:$full:$large;
+function &packed_ops (arg_u8x4 %x)() {
+abs_p_f16x2 $s1, $s2;
+abs_p_f32x2 $d1, $d1;
+neg_p_f16x2 $s1, $s2;
+add_pp_f16x2 $s1, $s0, $s3;
+};
+
+// 10.1.1
+function &foo()()
+{
+  ret;
+};
+function &bar()()
+{
+  {call &foo();} //start argument scope
+};
+
+// 10.3.2
+function &fun (arg_u32 %out) (arg_u32 %in0, arg_u32 %in1)
+{
+ret;
+};
+function &caller()()
+{
+{
+arg_u32 %input1;
+arg_u32 %input2;
+call &fnWithTwoArgs ()(%input1, %input2); // call of a function
+// all work-items called
+}
+// ...
+};
+
+// 10.3.3
+signature &bar_t (arg_u32 ) (align 8 arg_f32, arg_f32 %x[10]);
+signature &fun_t (arg_u32) (arg_u32, arg_u32);
+function &caller1 ()()
+{
+{
+arg_u32 %out;
+arg_u32 %in1;
+arg_u32 %in2;
+call $d2 (%out)(%in1, %in2) &fun_t;
+// ...
+}
+};
+
+

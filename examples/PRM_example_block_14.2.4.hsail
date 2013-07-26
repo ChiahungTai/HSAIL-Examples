@@ -1,0 +1,22 @@
+version 1:0:$full:$large;
+block "rti"
+blockstring "meta info global";
+endblock;
+global_u32 &a = 0;
+
+static global_u32 &c;
+function &foo () (align 8 arg_b8 %z[12])
+{
+  block "rti"
+  blockstring "meta info about this function";
+  endblock;
+  ret;
+};
+
+kernel &square (kernarg_u32 %___square__a)
+{
+  block "rti"
+  blockstring "meta info about this kernel";
+  endblock;
+  ret;
+};

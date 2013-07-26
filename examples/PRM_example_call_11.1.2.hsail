@@ -1,0 +1,26 @@
+version 1:0:$base:$large;
+function &bar (arg_u32 %r) (arg_f32 %a);
+signature &barone_t (arg_u32 %r) (arg_f32 %a);
+function &foo (arg_u32 %r) (arg_f32 %a);
+function &Example()(arg_u32 %arg1) {
+  ldc_u64 $d1, &foo;
+  cbr $c0, @lab;
+  ldc_u64 $d1, &bar;
+  @lab: st_arg_f32 2.0f, [%arg1];
+  {
+    arg_u32 %res;
+
+    // call foo or bar using an explicit list
+    // foo and bar are the two potential targets
+    // $s1 can contain the address of foo or bar
+
+    call_width(all) $d1 (%res)(%arg1) [&foo, &bar];
+  }
+  {
+    arg_u32 %res;
+
+    // call foo or bar using a signature
+
+    call_width(all) $d1 (%res)(%arg1) &barone_t;
+  }
+};
